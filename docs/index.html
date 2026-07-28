@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DSC Weather — Documentation</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #2d2d2d;
+      background: #f7f8fa;
+    }
+
+    /* ── Layout ── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 0 56px 72px;
+      min-height: 100vh;
+    }
+
+    /* ── Colour tokens ── */
+    :root {
+      --green-dark: #115631;
+      --green-mid:  #2d6a4f;
+      --amber:      #e7a553;
+      --slate:      #3d3d3d;
+      --light-grey: #f5f5f5;
+      --mid-grey:   #cccccc;
+      --border:     #e2e4e8;
+    }
+
+    /* ── Top nav ── */
+    .topnav {
+      background: var(--green-dark);
+      color: #fff;
+    }
+    .topnav-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 14px 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .topnav-brand {
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+    }
+    .topnav-links { display: flex; gap: 18px; }
+    .topnav-links a {
+      color: #d9ebe0;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .topnav-links a:hover { color: #fff; text-decoration: underline; }
+
+    /* ── Header / cover ── */
+    .cover {
+      border-left: 5px solid var(--green-dark);
+      padding: 20px 24px;
+      margin: 40px 0;
+      background: #f0f7f2;
+      border-radius: 0 6px 6px 0;
+    }
+    .cover h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 6px;
+    }
+    .cover .subtitle {
+      font-size: 0.95rem;
+      color: #555;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--green-dark);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 9px;
+      border-radius: 10px;
+      margin-top: 10px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Resource cards ── */
+    .resource-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 24px 0 8px;
+    }
+    @media (max-width: 600px) {
+      .resource-grid { grid-template-columns: 1fr; }
+    }
+    .resource-card {
+      display: block;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+    .resource-card:hover {
+      border-color: var(--green-mid);
+      box-shadow: 0 2px 10px rgba(17,86,49,0.12);
+    }
+    .resource-card .icon { font-size: 1.3rem; }
+    .resource-card .title {
+      font-weight: 700;
+      color: var(--green-dark);
+      margin: 6px 0 3px;
+      font-size: 0.98rem;
+    }
+    .resource-card .desc { font-size: 0.82rem; color: #666; }
+
+    /* ── Headings ── */
+    h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin: 40px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--green-dark);
+    }
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--green-mid);
+      margin: 28px 0 8px;
+    }
+    h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--slate);
+      margin: 18px 0 6px;
+    }
+
+    /* ── Body text ── */
+    p { margin-bottom: 12px; }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
+    }
+
+    /* ── Config sections ── */
+    .config-step {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 36px;
+    }
+    .config-step-header {
+      background: var(--green-dark);
+      color: #fff;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .config-step-header .num {
+      background: rgba(255,255,255,0.25);
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .config-step-header h3 {
+      color: #fff;
+      margin: 0;
+      font-size: 1rem;
+    }
+    .config-step-body {
+      padding: 20px 24px;
+    }
+
+    /* ── Code / pre ── */
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.85em;
+      background: var(--light-grey);
+      color: #c0392b;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    pre {
+      background: var(--light-grey);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 18px;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    pre code { background: none; color: #2d2d2d; padding: 0; }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin: 14px 0;
+    }
+    thead tr { background: var(--green-dark); color: #fff; }
+    thead th {
+      padding: 9px 12px;
+      text-align: left;
+      font-weight: 600;
+    }
+    tbody tr:nth-child(even) { background: var(--light-grey); }
+    tbody td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+    tbody tr:last-child td { border-bottom: none; }
+
+    /* ── Callouts ── */
+    .callout {
+      border-left: 4px solid var(--amber);
+      background: #fff8e1;
+      padding: 10px 16px;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.88rem;
+      color: #555;
+      margin: 14px 0;
+    }
+    .callout strong { color: #333; }
+
+    /* ── Bullet lists ── */
+    ul, ol { padding-left: 22px; margin-bottom: 12px; }
+    li { margin-bottom: 5px; }
+
+    /* ── Output files section ── */
+    .output-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .output-item {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 16px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .output-icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .output-file { font-family: monospace; font-size: 0.82rem; color: var(--green-dark); font-weight: 600; }
+    .output-desc { font-size: 0.85rem; color: #555; margin-top: 2px; }
+
+    /* ── Run steps ── */
+    .run-steps { list-style: none; padding: 0; counter-reset: run-step; }
+    .run-steps li {
+      counter-increment: run-step;
+      display: flex;
+      gap: 14px;
+      margin-bottom: 10px;
+      align-items: flex-start;
+    }
+    .run-steps li::before {
+      content: counter(run-step);
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      background: var(--green-mid);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 3px;
+    }
+
+    footer {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 24px 56px 40px;
+      font-size: 0.8rem;
+      color: #888;
+    }
+    footer a { color: var(--green-mid); }
+  </style>
+</head>
+<body>
+
+  <div class="topnav">
+    <div class="topnav-inner">
+      <div class="topnav-brand">dsc_weather</div>
+      <div class="topnav-links">
+        <a href="#overview">Overview</a>
+        <a href="#configuration">Configuration</a>
+        <a href="#outputs">Outputs</a>
+        <a href="assets/dsc_weather_technical_guide.pdf">Technical Guide</a>
+        <a href="https://github.com/wildlife-dynamics/dsc-weather">GitHub</a>
+      </div>
+    </div>
+  </div>
+
+<div class="page">
+
+  <!-- ── Cover ── -->
+  <div class="cover">
+    <h1>DSC Weather</h1>
+    <p class="subtitle">Weather Station Ingestion — Station Metadata &amp; Readings Pipeline</p>
+    <span class="badge">dsc_weather</span>
+  </div>
+
+  <p>
+    This site documents the DSC Weather Ecoscope workflow, which ingests weather station
+    observations from EarthRanger, tags each station with the conservancy boundary it falls
+    within, and exports analysis-ready station metadata and per-station, per-year weather
+    reading files.
+  </p>
+
+  <div class="resource-grid">
+    <a class="resource-card" href="assets/dsc_weather_technical_guide.pdf">
+      <div class="icon">🛠️</div>
+      <div class="title">Technical Guide (PDF)</div>
+      <div class="desc">Full task-by-task breakdown of the compiled workflow spec, for engineers and reviewers.</div>
+    </a>
+    <a class="resource-card" href="../README.md">
+      <div class="icon">📘</div>
+      <div class="title">User Guide (Markdown)</div>
+      <div class="desc">Source copy of this configuration guide, for viewing on GitHub.</div>
+    </a>
+  </div>
+
+  <hr />
+
+  <!-- ── Overview ── -->
+  <h2 id="overview">Overview</h2>
+
+  <p>
+    Unlike a per-survey pipeline, this workflow performs a single, station-centric ingestion pass
+    each run — it isn't scoped to any survey or activity period. Each run produces:
+  </p>
+  <ul>
+    <li>A <strong>station metadata file</strong> — one row per weather station, with its conservancy and coordinates</li>
+    <li><strong>Per-station, per-year weather reading files</strong> — precipitation, temperature, humidity, and wind speed observations</li>
+  </ul>
+  <p>
+    Both outputs are also rendered as browsable <strong>table widgets</strong> on the workflow run's
+    dashboard, so reviewers can inspect the data without downloading the files.
+  </p>
+
+  <hr />
+
+  <!-- ── Prerequisites ── -->
+  <h2>Prerequisites</h2>
+
+  <p>Before running the workflow, ensure you have:</p>
+  <ul>
+    <li>
+      An <strong>EarthRanger connection with a weather station subject group</strong> (e.g. a
+      <code>TAHMO Stations</code> group) whose subjects log periodic observations carrying
+      <code>precipitation</code>, <code>surface_air_temperature</code>, <code>relative_humidity</code>,
+      and <code>wind_speed</code> fields
+    </li>
+    <li>
+      Weather station subjects with valid point locations — a station is dropped from the output
+      if it doesn't spatially fall within any conservancy boundary in the reference conservancies
+      file used by the workflow
+    </li>
+  </ul>
+
+  <hr />
+
+  <!-- ── Configuration ── -->
+  <h2 id="configuration">Step-by-Step Configuration</h2>
+
+  <!-- Step 1 -->
+  <div class="config-step">
+    <div class="config-step-header">
+      <div class="num">1</div>
+      <h3>Add the Workflow Template</h3>
+    </div>
+    <div class="config-step-body">
+      <p>
+        In Ecoscope, go to <strong>Workflow Templates</strong> and click <strong>Add Workflow Template</strong>.
+        Paste the GitHub repository URL into the <strong>Github Link</strong> field and click <strong>Add Template</strong>.
+      </p>
+      <pre><code>https://github.com/wildlife-dynamics/dsc-weather.git</code></pre>
+      <div class="callout">
+        <strong>Note:</strong> The card may show <em>Initializing…</em> briefly while the environment is set up.
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="config-step">
+    <div class="config-step-header">
+      <div class="num">2</div>
+      <h3>Select the Workflow</h3>
+    </div>
+    <div class="config-step-body">
+      <p>
+        After the template is added it appears in the <strong>Workflow Templates</strong> list as
+        <strong>dsc_weather</strong>. Click the card to open the workflow configuration form.
+      </p>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="config-step">
+    <div class="config-step-header">
+      <div class="num">3</div>
+      <h3>Set Workflow Details and Time Range</h3>
+    </div>
+    <div class="config-step-body">
+      <p>The configuration form opens with two sections at the top.</p>
+
+      <h4>Set Workflow Details</h4>
+      <table>
+        <thead><tr><th>Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>Workflow Name</td><td>A short name to identify this run (required)</td></tr>
+          <tr><td>Workflow Description</td><td>Optional notes, e.g. the year or region covered</td></tr>
+        </tbody>
+      </table>
+
+      <h4>Time Range</h4>
+      <p>
+        This field is required on all Ecoscope workflows. It controls which weather observations
+        are fetched: observations on or after <strong>Since</strong> and up to <strong>Until</strong>
+        are retrieved from EarthRanger, and it is also used for timestamp display and UTC conversion.
+      </p>
+      <table>
+        <thead><tr><th>Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>Timezone</td><td>Local timezone for display and UTC conversion, e.g. <code>Africa/Nairobi (UTC+03:00)</code></td></tr>
+          <tr><td>Since</td><td>Start of the data fetch window</td></tr>
+          <tr><td>Until</td><td>End of the data fetch window</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="config-step">
+    <div class="config-step-header">
+      <div class="num">4</div>
+      <h3>Configure Weather Station Connection</h3>
+    </div>
+    <div class="config-step-body">
+      <table>
+        <thead><tr><th>Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Data Source</td>
+            <td>The EarthRanger connection that hosts the weather station subject group</td>
+          </tr>
+          <tr>
+            <td>Weather Station Subject Group</td>
+            <td>EarthRanger subject group name containing the weather stations, e.g. <code>TAHMO Stations</code> (defaults to <code>TAHMO Stations</code>)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- ── Running ── -->
+  <h2>Running the Workflow</h2>
+
+  <p>Once all parameters are configured, click <strong>Submit</strong>. The workflow will:</p>
+
+  <ol class="run-steps">
+    <li>Fetch observations from the configured weather station subject group over the Time Range.</li>
+    <li>Extract precipitation, temperature, humidity, and wind speed from each reading.</li>
+    <li>Download and load the reference conservancy boundaries, and tag each weather station with the conservancy it falls within — stations outside every boundary are dropped.</li>
+    <li>Rename station identity columns and extract station latitude/longitude from the point geometry.</li>
+    <li>Split each reading's timestamp into date, time, and year components.</li>
+    <li>Select and deduplicate station identity columns to one row per station, and export the station metadata file.</li>
+    <li>Select the weather reading columns and split them by station and calendar year, exporting one weather readings file per station per year.</li>
+    <li>Render both outputs as table widgets and attach them to the run's dashboard.</li>
+  </ol>
+
+  <hr />
+
+  <!-- ── Output Files ── -->
+  <h2 id="outputs">Output Files</h2>
+
+  <p>All outputs are written to <code>$ECOSCOPE_WORKFLOWS_RESULTS/</code>.</p>
+
+  <div class="output-grid">
+    <div class="output-item">
+      <div class="output-icon">🌦️</div>
+      <div>
+        <div class="output-file">station_metadata.parquet</div>
+        <div class="output-desc">
+          One row per weather station. Columns:
+          <code>Station ID</code>, <code>Conservancy</code>, <code>Latitude</code>, <code>Longitude</code>
+        </div>
+      </div>
+    </div>
+    <div class="output-item">
+      <div class="output-icon">🌧️</div>
+      <div>
+        <div class="output-file">{station_id}_{year}.parquet</div>
+        <div class="output-desc">
+          One file per weather station per calendar year covered by the Time Range. Columns:
+          <code>Station ID</code>, <code>Precipitation</code>, <code>Humidity</code>,
+          <code>Temperature</code>, <code>Windspeed</code>, <code>fixtime_year</code>,
+          <code>fixtime</code> — join back to <code>station_metadata.parquet</code> on
+          <code>Station ID</code> for coordinates and conservancy
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Note:</strong> If the weather station subject group returns no observations for the
+    configured Time Range, the run completes without producing these files rather than raising
+    an error.
+  </div>
+
+  <hr />
+
+  <h2>Dashboard Widgets</h2>
+
+  <p>In addition to the two output files, the run's dashboard includes:</p>
+
+  <table>
+    <thead><tr><th>Widget</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Station Metadata</td>
+        <td><code>station_metadata.parquet</code> contents, rendered as a sortable/filterable table</td>
+      </tr>
+      <tr>
+        <td>Station Year Weather Data</td>
+        <td>The combined weather readings (before they're split per station/year), rendered as a sortable/filterable table</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr />
+
+  <h2>Further Reading</h2>
+  <p>
+    For an implementation-level breakdown of every task in the compiled workflow spec — dependency
+    versions, skip conditions, and the full processing pipeline — see the
+    <a href="assets/dsc_weather_technical_guide.pdf">Technical Guide (PDF)</a>.
+  </p>
+
+</div>
+
+<footer>
+  Source: <a href="https://github.com/wildlife-dynamics/dsc-weather">wildlife-dynamics/dsc-weather</a>
+</footer>
+
+</body>
+</html>
