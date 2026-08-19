@@ -246,6 +246,9 @@ workflow:
   - name: Create Station Metadata Table Widget
     id: station_metadata_table_widget
     task: create_table_widget_single_view
+    skipif:
+      conditions:
+        - never
     partial:
       title: "Station Metadata"
       data: ${{ workflow.station_metadata_table_html_url.return }}
@@ -311,6 +314,9 @@ workflow:
   - name: Create Station Year Weather Table Widget
     id: syw_table_widget
     task: create_table_widget_single_view
+    skipif:
+      conditions:
+        - never
     partial:
       title: "Station Year Weather Data"
       data: ${{ workflow.syw_table_html_url.return }}
