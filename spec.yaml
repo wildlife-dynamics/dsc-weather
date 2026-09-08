@@ -37,7 +37,7 @@ task-instance-defaults:
       - any_dependency_skipped
 
 workflow:
-  - name: Set Workflow Details
+  - name: Workflow Details
     id: workflow_details
     task: set_workflow_details
 
@@ -51,11 +51,11 @@ workflow:
     partial:
       groupers: []
 
-  - name: Configure Weather EarthRanger connection
+  - name: Connect to EarthRanger
     id: weather_er_client
     task: set_er_connection
 
-  - name: Weather Station Subject Group Name
+  - name: Subject Group Name
     id: weather_subject_group_name
     task: set_string_var
 

@@ -18,7 +18,7 @@
       ],
       "type": "object",
       "description": "Add information that will help to differentiate this workflow from another.",
-      "title": "Set Workflow Details"
+      "title": "Workflow Details"
     },
     "time_range": {
       "additionalProperties": false,
@@ -73,7 +73,7 @@
         "data_source"
       ],
       "type": "object",
-      "title": "Configure Weather EarthRanger connection"
+      "title": "Connect to EarthRanger"
     },
     "weather_subject_group_name": {
       "additionalProperties": false,
@@ -89,7 +89,7 @@
         "var"
       ],
       "type": "object",
-      "title": "Weather Station Subject Group Name"
+      "title": "Subject Group Name"
     }
   },
   "$defs": {
