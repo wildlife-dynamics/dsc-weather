@@ -1,21 +1,10 @@
-name:  # Title Case, e.g. "My Ecoscope Workflow Template"
-
-# at least one author is required
+name: DSC Weather
 author:
-  - name: ""
-    organization: ""
-    email: ""
+  - name: Tevin Temu
+    organization: Wildlife Dynamics
+    email: tevin@wildlifedynamics.com
 
-description: # A short description
-
-# todo: add example
-theory: "" # optional
-
-# todo: add example
-output_comment: "" # optional
-
-# optional
-# example
-# citation: 
-#   - Wu, Y. et al. (2025). "Monitoring elephant spatial patterns with Ecoscope workflows."
-citation: [] 
+description: Processes weather station observations from an EarthRanger subject group (e.g. TAHMO stations), tags each station with the conservancy boundary it falls within, and exports analysis-ready station metadata and per-station, per-year weather reading files, with both shown as tables on a dashboard.
+theory: "Precipitation, surface air temperature, relative humidity, and wind speed are extracted from each station observation in the time range. Each station is spatially joined to a reference set of conservancy boundaries and dropped if it falls outside all of them. Station identity and coordinates are deduplicated to one row per station, and readings are split by station and calendar year so they can be joined back to the station metadata on Station ID."
+output_comment: "Outputs a station metadata Parquet file (Station ID, Conservancy, Latitude, Longitude) and one weather readings Parquet file per station per calendar year (precipitation, humidity, temperature, and wind speed with timestamps). The dashboard shows the station metadata and the combined weather readings as sortable, filterable tables."
+citation: []
