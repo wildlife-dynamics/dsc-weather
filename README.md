@@ -72,7 +72,7 @@ This field is required on all Ecoscope workflows. It controls which weather obse
 | Field | Description |
 |-------|-------------|
 | Data Source | The EarthRanger connection that hosts the weather station subject group |
-| Weather Station Subject Group | EarthRanger subject group name containing the weather stations, e.g. `TAHMO Stations` (defaults to `TAHMO Stations`) |
+| Weather Station Subject Group | The EarthRanger subject group containing the weather stations, picked from a drop-down of the subject groups on the chosen data source (defaults to `TAHMO Stations`) |
 
 ---
 

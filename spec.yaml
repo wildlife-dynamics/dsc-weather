@@ -26,9 +26,17 @@ requirements:
 
 rjsf-overrides:
   properties:
-    weather_subject_group_name.properties.var.title: "Weather Station Subject Group"
-    weather_subject_group_name.properties.var.description: "EarthRanger subject group name containing the weather stations (e.g. TAHMO Stations)."
-    weather_subject_group_name.properties.var.default: "TAHMO Stations"
+    # A drop-down of the chosen EarthRanger site's subject group names
+    weather_subject_group_name.properties.var:
+      title: Weather Station Subject Group
+      type: string
+      default: TAHMO Stations
+      description: The EarthRanger subject group containing the weather stations (e.g. TAHMO Stations), picked from the chosen data source's subject groups.
+      ecoscope:transform:
+      - transformer: EarthRangerEnumResolver
+        transformer_kws:
+          type: subject_group_name
+          depends_on: properties.weather_er_client.properties.data_source.properties.name
 
 task-instance-defaults:
   skipif:

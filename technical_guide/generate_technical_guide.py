@@ -200,7 +200,9 @@ story += [
     p("A single EarthRanger connection (<b>set_er_connection</b>, id: "
       "weather_er_client) plus a subject group name (<b>set_string_var</b>, id: "
       "weather_subject_group_name, default: \"TAHMO Stations\") configure the "
-      "workflow's only data source."),
+      "workflow's only data source. An rjsf override turns the group name into a "
+      "drop-down of the connection's subject groups (<b>EarthRangerEnumResolver</b>, "
+      "depending on weather_er_client's data source)."),
     PageBreak(),
 ]
 
