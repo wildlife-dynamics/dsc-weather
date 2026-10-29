@@ -1,19 +1,19 @@
 id: dsc_weather
 requirements:
   - name: ecoscope-platform
-    version: ">=2.15.0, <2.16.0"
+    version: ">=2.25.3"
     channel: https://repo.prefix.dev/ecoscope-workflows/
 
   - name: ecoscope-workflows-ext-custom
-    version: "0.1.0rc14.*"
+    version: "0.1.5.*"
     channel: https://repo.prefix.dev/ecoscope-workflows-custom/
 
   - name: ecoscope-workflows-ext-ste
-    version: "0.0.0rc1.*"
+    version: "0.0.28.*"
     channel: https://repo.prefix.dev/ecoscope-workflows-custom/
 
   - name: ecoscope-workflows-ext-distance-sample-counts
-    version: "1.0.2.*"
+    version: "1.1.4.*"
     channel: https://repo.prefix.dev/ecoscope-workflows-custom/
 
   - name: pydeck
@@ -78,6 +78,7 @@ workflow:
       raise_on_empty: false
       include_details: true
       include_subjectsource_details: false
+      include_subject_additional: false
 
   - name: Extract precipitation
     id: extract_precipitation
@@ -89,6 +90,7 @@ workflow:
         - precipitation
       output_type: float
       output_column_name: Precipitation
+      fan_out: true
 
   - name: Extract temperature
     id: extract_temperature
@@ -100,6 +102,7 @@ workflow:
         - surface_air_temperature
       output_type: float
       output_column_name: Temperature
+      fan_out: true
 
   - name: Extract humidity
     id: extract_humidity
@@ -111,6 +114,7 @@ workflow:
         - relative_humidity
       output_type: float
       output_column_name: Humidity
+      fan_out: true
 
   - name: Extract wind speed
     id: extract_wind_speed
@@ -122,6 +126,7 @@ workflow:
         - wind_speed
       output_type: float
       output_column_name: Windspeed
+      fan_out: true
 
   # One-time: station -> conservancy boundary file
   - name: Download weather station conservancy boundaries
@@ -169,6 +174,7 @@ workflow:
       rename_columns:
         extra__subject__name: "Station ID"
         name: "Conservancy"
+      duplicate_strategy: suffix
 
   - name: Extract weather station latitude and longitude
     id: extract_weather_lat_long
@@ -200,6 +206,7 @@ workflow:
       rename_columns:
         fixtime_date: "Date"
         fixtime_time: "Time"
+      duplicate_strategy: suffix
 
   # Station metadata: one row per station (join key = Station ID)
   - name: Select station metadata columns

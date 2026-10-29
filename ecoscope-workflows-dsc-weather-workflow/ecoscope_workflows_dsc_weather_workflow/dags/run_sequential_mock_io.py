@@ -38,15 +38,15 @@ from ecoscope.platform.tasks.results import draw_table as draw_table
 from ecoscope.platform.tasks.results import gather_dashboard as gather_dashboard
 from ecoscope.platform.tasks.skip import never as never
 from ecoscope.platform.tasks.transformation import (
+    decompose_datetime as decompose_datetime,
+)
+from ecoscope.platform.tasks.transformation import (
     extract_value_from_json_column as extract_value_from_json_column,
 )
 from ecoscope.platform.tasks.transformation import map_columns as map_columns
 from ecoscope_workflows_ext_custom.tasks.io import load_df as load_df
 from ecoscope_workflows_ext_custom.tasks.spatial_ops import (
     reproject_gdf as reproject_gdf,
-)
-from ecoscope_workflows_ext_custom.tasks.transformation import (
-    decompose_datetime as decompose_datetime,
 )
 from ecoscope_workflows_ext_custom.tasks.transformation import (
     select_columns as select_columns,
@@ -180,6 +180,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             raise_on_empty=False,
             include_details=True,
             include_subjectsource_details=False,
+            include_subject_additional=False,
             **(params.get("fetch_weather_obs") or {}),
         )
         .call()
@@ -204,6 +205,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             field_name_options=["precipitation"],
             output_type="float",
             output_column_name="Precipitation",
+            fan_out=True,
             **(params.get("extract_precipitation") or {}),
         )
         .call()
@@ -228,6 +230,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             field_name_options=["surface_air_temperature"],
             output_type="float",
             output_column_name="Temperature",
+            fan_out=True,
             **(params.get("extract_temperature") or {}),
         )
         .call()
@@ -252,6 +255,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             field_name_options=["relative_humidity"],
             output_type="float",
             output_column_name="Humidity",
+            fan_out=True,
             **(params.get("extract_humidity") or {}),
         )
         .call()
@@ -276,6 +280,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             field_name_options=["wind_speed"],
             output_type="float",
             output_column_name="Windspeed",
+            fan_out=True,
             **(params.get("extract_wind_speed") or {}),
         )
         .call()
@@ -393,6 +398,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
                 "extra__subject__name": "Station ID",
                 "name": "Conservancy",
             },
+            duplicate_strategy="suffix",
             **(params.get("rename_weather_identity") or {}),
         )
         .call()
@@ -460,6 +466,7 @@ def main(params: dict[str, Any], validate_params_schema: bool = True):
             drop_columns=[],
             retain_columns=[],
             rename_columns={"fixtime_date": "Date", "fixtime_time": "Time"},
+            duplicate_strategy="suffix",
             **(params.get("rename_weather_datetime") or {}),
         )
         .call()
